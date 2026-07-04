@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Habib · Agent OpenClaw</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #020617;
+        --primary: #4f46e5;
+        --accent: #22c55e;
+        --border: rgba(148, 163, 184, 0.5);
+        --text-main: #e5e7eb;
+        --text-soft: #9ca3af;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+          "Segoe UI", sans-serif;
+        background: radial-gradient(
+            circle at top left,
+            rgba(37, 99, 235, 0.35),
+            transparent 55%
+          ),
+          #020617;
+        color: var(--text-main);
+      }
+      .page {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.8rem 1rem;
+        backdrop-filter: blur(12px);
+        background: linear-gradient(
+          to right,
+          rgba(15, 23, 42, 0.92),
+          rgba(30, 64, 175, 0.7)
+        );
+        border-bottom: 1px solid rgba(148, 163, 184, 0.45);
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+      }
+      .brand-pill {
+        font-size: 0.7rem;
+        padding: 0.1rem 0.45rem;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.6);
+        color: var(--text-soft);
+      }
+      nav {
+        display: flex;
+        gap: 0.2rem;
+      }
+      nav button {
+        border-radius: 999px;
+        border: none;
+        background: transparent;
+        color: var(--text-soft);
+        padding: 0.35rem 0.7rem;
+        font-size: 0.8rem;
+      }
+      nav button.active {
+        background: rgba(37, 99, 235, 0.9);
+        color: #fff;
+      }
+      main {
+        flex: 1;
+        padding: 0.9rem 0.8rem 1.5rem;
+      }
+      .shell {
+        max-width: 960px;
+        margin: 0 auto;
+        border-radius: 1.1rem;
+        border: 1px solid rgba(148, 163, 184, 0.5);
+        background: radial-gradient(
+            circle at top left,
+            rgba(56, 189, 248, 0.2),
+            transparent 60%
+          ),
+          radial-gradient(
+            circle at bottom right,
+            rgba(37, 99, 235, 0.16),
+            transparent 55%
+          ),
+          rgba(2, 6, 23, 0.97);
+        padding: 1rem;
+      }
+      .hero {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        margin-bottom: 0.75rem;
+      }
+      .hero-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+      }
+      .hero-sub {
+        font-size: 0.85rem;
+        color: var(--text-soft);
+      }
+      .badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.3rem;
+        margin-top: 0.25rem;
+        font-size: 0.7rem;
+      }
+      .badge {
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.5);
+        padding: 0.1rem 0.45rem;
+        color: var(--text-soft);
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr;
+        gap: 0.8rem;
+      }
+      .panel {
+        border-radius: 0.9rem;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        background: rgba(15, 23, 42, 0.96);
+        padding: 0.75rem;
+      }
+      .panel h2 {
+        font-size: 0.9rem;
+        margin: 0 0 0.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .panel h2 span {
+        font-size: 0.7rem;
+        color: var(--text-soft);
+        font-weight: 400;
+      }
+
+      .chat-box {
+        border-radius: 0.75rem;
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        background: rgba(15, 23, 42, 0.96);
+        padding: 0.6rem;
+        height: 52vh;
+        max-height: 420px;
+        overflow-y: auto;
+        font-size: 0.85rem;
+      }
+      .chat-empty {
+        text-align: center;
+        padding: 1.8rem 1rem;
+        color: var(--text-soft);
+      }
+      .chat-msg {
+        margin-bottom: 0.55rem;
+      }
+      .chat-role {
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-soft);
+        margin-bottom: 0.18rem;
+      }
+      .bubble {
+        padding: 0.4rem 0.6rem;
+        border-radius: 0.7rem;
+        line-height: 1.45;
+      }
+      .bubble.user {
+        background: rgba(59, 130, 246, 0.26);
+      }
+      .bubble.agent {
+        background: rgba(15, 23, 42, 0.98);
+        border: 1px solid rgba(148, 163, 184, 0.5);
+      }
+      .chat-input-row {
+        display: flex;
+        gap: 0.45rem;
+        margin-top: 0.6rem;
+      }
+      .chat-input-row input {
+        flex: 1;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.55);
+        background: rgba(15, 23, 42, 0.96);
+        padding: 0.45rem 0.7rem;
+        color: var(--text-main);
+        font-size: 0.85rem;
+      }
+      .chat-input-row button {
+        border-radius: 999px;
+        border: none;
+        background: linear-gradient(to right, #4f46e5, #1d4ed8);
+        padding: 0.4rem 0.8rem;
+        font-size: 0.82rem;
+        color: #fff;
+        white-space: nowrap;
+      }
+      .hint {
+        margin-top: 0.4rem;
+        font-size: 0.7rem;
+        color: var(--text-soft);
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.5rem;
+        margin-bottom: 0.6rem;
+      }
+      .card {
+        border-radius: 0.75rem;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        padding: 0.5rem 0.6rem;
+        font-size: 0.78rem;
+      }
+      .card-label {
+        color: var(--text-soft);
+        margin-bottom: 0.18rem;
+      }
+      .card-value {
+        font-size: 0.92rem;
+      }
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.08rem 0.5rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+      }
+      .dot {
+        width: 0.4rem;
+        height: 0.4rem;
+        border-radius: 999px;
+        background: #22c55e;
+      }
+      .status-online {
+        background: rgba(22, 163, 74, 0.25);
+        color: #bbf7d0;
+      }
+      .log-list {
+        border-radius: 0.7rem;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        background: rgba(15, 23, 42, 0.98);
+        padding: 0.45rem 0.55rem;
+        font-size: 0.74rem;
+        max-height: 180px;
+        overflow-y: auto;
+      }
+      .log-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.5rem;
+        padding: 0.16rem 0;
+        border-bottom: 1px dashed rgba(30, 64, 175, 0.7);
+      }
+      .log-row:last-child {
+        border-bottom: none;
+      }
+      .log-label {
+        color: var(--text-soft);
+      }
+      .log-value {
+        text-align: right;
+      }
+
+      footer {
+        padding: 0.8rem 1rem 0.9rem;
+        font-size: 0.72rem;
+        color: var(--text-soft);
+        text-align: center;
+      }
+
+      @media (max-width: 768px) {
+        main {
+          padding-inline: 0.55rem;
+        }
+        .shell {
+          padding: 0.75rem;
+        }
+        .layout {
+          grid-template-columns: 1fr;
+        }
+        header {
+          padding-inline: 0.6rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <div class="brand">
+          <span>Habib</span>
+          <span class="brand-pill">OpenClaw · Test env</span>
+        </div>
+        <nav>
+          <button class="active" data-tab="chat" onclick="setTab('chat')">
+            Chat
+          </button>
+          <button data-tab="monitoring" onclick="setTab('monitoring')">
+            Monitoring
+          </button>
+        </nav>
+      </header>
+      <main>
+        <section class="shell">
+          <div class="hero">
+            <div class="hero-title">Espace de test pour ton agent Habib</div>
+            <p class="hero-sub">
+              Landing page pour discuter avec l'agent OpenClaw et visualiser un
+              monitoring minimal. Base propre, prête à évoluer.
+            </p>
+            <div class="badges">
+              <span class="badge">Mobile-first</span>
+              <span class="badge">HTML statique</span>
+              <span class="badge">Prêt Netlify</span>
+            </div>
+          </div>
+          <div class="layout">
+            <div class="panel" id="panel-chat">
+              <h2>
+                <span>Chat</span>
+                <span>Mock front · backend à brancher</span>
+              </h2>
+              <div class="chat-box" id="chat-box">
+                <div class="chat-empty" id="chat-empty">
+                  Aucun message pour l'instant. Ici tu verras les échanges avec
+                  Habib.<br />
+                  En prod, cette zone appellera ton backend OpenClaw.
+                </div>
+              </div>
+              <form class="chat-input-row" onsubmit="sendMessage(event)">
+                <input
+                  id="chat-input"
+                  type="text"
+                  placeholder="Écris un message pour Habib..."
+                  autocomplete="off"
+                />
+                <button type="submit">Envoyer</button>
+              </form>
+              <div class="hint">
+                Pour l'instant, tout reste côté navigateur (mock). Ensuite tu
+                brancheras <code>/api/chat</code> sur ton serveur.
+              </div>
+            </div>
+            <div class="panel" id="panel-monitoring" style="display: none">
+              <h2>
+                <span>Monitoring</span>
+                <span>Preview d'un futur dashboard</span>
+              </h2>
+              <div class="cards">
+                <div class="card">
+                  <div class="card-label">Statut agent</div>
+                  <div class="card-value">
+                    <span class="status-pill status-online" id="status-pill">
+                      <span class="dot"></span>
+                      <span id="status-text">online (mock)</span>
+                    </span>
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="card-label">Requêtes (mock)</div>
+                  <div class="card-value" id="req-count">12</div>
+                </div>
+                <div class="card">
+                  <div class="card-label">Dernière exécution</div>
+                  <div class="card-value" id="last-run">
+                    il y a quelques secondes
+                  </div>
+                </div>
+              </div>
+              <div class="log-list" id="log-list">
+                <div class="log-row">
+                  <div class="log-label">Bootstrap du test env</div>
+                  <div class="log-value">OK</div>
+                </div>
+                <div class="log-row">
+                  <div class="log-label">Connexion backend OpenClaw</div>
+                  <div class="log-value">à brancher</div>
+                </div>
+                <div class="log-row">
+                  <div class="log-label">Dernier message</div>
+                  <div class="log-value" id="log-last-msg">—</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+      <footer>
+        Prototype de test Habib · Statique HTML · Déployable en 1 clic sur
+        Netlify.
+      </footer>
+    </div>
+    <script>
+      const messages = [];
+
+      function setTab(tab) {
+        const chatBtn = document.querySelector('nav button[data-tab="chat"]');
+        const monBtn = document.querySelector(
+          'nav button[data-tab="monitoring"]'
+        );
+        const chatPanel = document.getElementById('panel-chat');
+        const monPanel = document.getElementById('panel-monitoring');
+
+        if (tab === 'chat') {
+          chatBtn.classList.add('active');
+          monBtn.classList.remove('active');
+          chatPanel.style.display = '';
+          monPanel.style.display = 'none';
+        } else {
+          monBtn.classList.add('active');
+          chatBtn.classList.remove('active');
+          chatPanel.style.display = 'none';
+          monPanel.style.display = '';
+        }
+      }
+
+      function renderMessages() {
+        const box = document.getElementById('chat-box');
+        const empty = document.getElementById('chat-empty');
+        if (!box) return;
+
+        box.innerHTML = '';
+        if (messages.length === 0) {
+          if (empty) empty.style.display = 'block';
+          return;
+        }
+        if (empty) empty.style.display = 'none';
+
+        messages.forEach((m) => {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'chat-msg';
+
+          const role = document.createElement('div');
+          role.className = 'chat-role';
+          role.textContent = m.role === 'user' ? 'Toi' : 'Habib (mock)';
+
+          const bubble = document.createElement('div');
+          bubble.className = 'bubble ' + (m.role === 'user' ? 'user' : 'agent');
+          bubble.textContent = m.content;
+
+          wrapper.appendChild(role);
+          wrapper.appendChild(bubble);
+          box.appendChild(wrapper);
+        });
+        box.scrollTop = box.scrollHeight;
+      }
+
+      function sendMessage(event) {
+        event.preventDefault();
+        const input = document.getElementById('chat-input');
+        if (!input || !input.value.trim()) return;
+        const text = input.value.trim();
+        input.value = '';
+
+        messages.push({ role: 'user', content: text });
+        messages.push({
+          role: 'agent',
+          content:
+            'Mock: en prod je répondrai via ton backend OpenClaw à "' +
+            text +
+            '".',
+        });
+
+        const lastMsg = document.getElementById('log-last-msg');
+        if (lastMsg) {
+          lastMsg.textContent =
+            text.slice(0, 40) + (text.length > 40 ? '…' : '');
+        }
+        const reqCount = document.getElementById('req-count');
+        if (reqCount) {
+          const current = parseInt(reqCount.textContent || '0', 10) || 0;
+          reqCount.textContent = current + 1;
+        }
+        renderMessages();
+      }
+
+      renderMessages();
+    </script>
+  </body>
+</html>
