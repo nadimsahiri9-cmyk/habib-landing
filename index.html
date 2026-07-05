@@ -1,501 +1,135 @@
 <!doctype html>
-<html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Habib · Agent OpenClaw</title>
-    <style>
-      :root {
-        color-scheme: dark;
-        --bg: #020617;
-        --primary: #4f46e5;
-        --accent: #22c55e;
-        --border: rgba(148, 163, 184, 0.5);
-        --text-main: #e5e7eb;
-        --text-soft: #9ca3af;
-      }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-          "Segoe UI", sans-serif;
-        background: radial-gradient(
-            circle at top left,
-            rgba(37, 99, 235, 0.35),
-            transparent 55%
-          ),
-          #020617;
-        color: var(--text-main);
-      }
-      .page {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-      }
-      header {
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0.8rem 1rem;
-        backdrop-filter: blur(12px);
-        background: linear-gradient(
-          to right,
-          rgba(15, 23, 42, 0.92),
-          rgba(30, 64, 175, 0.7)
-        );
-        border-bottom: 1px solid rgba(148, 163, 184, 0.45);
-      }
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 0.45rem;
-        font-size: 0.95rem;
-        font-weight: 600;
-      }
-      .brand-pill {
-        font-size: 0.7rem;
-        padding: 0.1rem 0.45rem;
-        border-radius: 999px;
-        border: 1px solid rgba(148, 163, 184, 0.6);
-        color: var(--text-soft);
-      }
-      nav {
-        display: flex;
-        gap: 0.2rem;
-      }
-      nav button {
-        border-radius: 999px;
-        border: none;
-        background: transparent;
-        color: var(--text-soft);
-        padding: 0.35rem 0.7rem;
-        font-size: 0.8rem;
-      }
-      nav button.active {
-        background: rgba(37, 99, 235, 0.9);
-        color: #fff;
-      }
-      main {
-        flex: 1;
-        padding: 0.9rem 0.8rem 1.5rem;
-      }
-      .shell {
-        max-width: 960px;
-        margin: 0 auto;
-        border-radius: 1.1rem;
-        border: 1px solid rgba(148, 163, 184, 0.5);
-        background: radial-gradient(
-            circle at top left,
-            rgba(56, 189, 248, 0.2),
-            transparent 60%
-          ),
-          radial-gradient(
-            circle at bottom right,
-            rgba(37, 99, 235, 0.16),
-            transparent 55%
-          ),
-          rgba(2, 6, 23, 0.97);
-        padding: 1rem;
-      }
-      .hero {
-        display: flex;
-        flex-direction: column;
-        gap: 0.4rem;
-        margin-bottom: 0.75rem;
-      }
-      .hero-title {
-        font-size: 1.2rem;
-        font-weight: 600;
-      }
-      .hero-sub {
-        font-size: 0.85rem;
-        color: var(--text-soft);
-      }
-      .badges {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.3rem;
-        margin-top: 0.25rem;
-        font-size: 0.7rem;
-      }
-      .badge {
-        border-radius: 999px;
-        border: 1px solid rgba(148, 163, 184, 0.5);
-        padding: 0.1rem 0.45rem;
-        color: var(--text-soft);
-      }
-      .layout {
-        display: grid;
-        grid-template-columns: 1.4fr 1fr;
-        gap: 0.8rem;
-      }
-      .panel {
-        border-radius: 0.9rem;
-        border: 1px solid rgba(148, 163, 184, 0.45);
-        background: rgba(15, 23, 42, 0.96);
-        padding: 0.75rem;
-      }
-      .panel h2 {
-        font-size: 0.9rem;
-        margin: 0 0 0.5rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .panel h2 span {
-        font-size: 0.7rem;
-        color: var(--text-soft);
-        font-weight: 400;
-      }
-
-      .chat-box {
-        border-radius: 0.75rem;
-        border: 1px solid rgba(148, 163, 184, 0.4);
-        background: rgba(15, 23, 42, 0.96);
-        padding: 0.6rem;
-        height: 52vh;
-        max-height: 420px;
-        overflow-y: auto;
-        font-size: 0.85rem;
-      }
-      .chat-empty {
-        text-align: center;
-        padding: 1.8rem 1rem;
-        color: var(--text-soft);
-      }
-      .chat-msg {
-        margin-bottom: 0.55rem;
-      }
-      .chat-role {
-        font-size: 0.68rem;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: var(--text-soft);
-        margin-bottom: 0.18rem;
-      }
-      .bubble {
-        padding: 0.4rem 0.6rem;
-        border-radius: 0.7rem;
-        line-height: 1.45;
-      }
-      .bubble.user {
-        background: rgba(59, 130, 246, 0.26);
-      }
-      .bubble.agent {
-        background: rgba(15, 23, 42, 0.98);
-        border: 1px solid rgba(148, 163, 184, 0.5);
-      }
-      .chat-input-row {
-        display: flex;
-        gap: 0.45rem;
-        margin-top: 0.6rem;
-      }
-      .chat-input-row input {
-        flex: 1;
-        border-radius: 999px;
-        border: 1px solid rgba(148, 163, 184, 0.55);
-        background: rgba(15, 23, 42, 0.96);
-        padding: 0.45rem 0.7rem;
-        color: var(--text-main);
-        font-size: 0.85rem;
-      }
-      .chat-input-row button {
-        border-radius: 999px;
-        border: none;
-        background: linear-gradient(to right, #4f46e5, #1d4ed8);
-        padding: 0.4rem 0.8rem;
-        font-size: 0.82rem;
-        color: #fff;
-        white-space: nowrap;
-      }
-      .hint {
-        margin-top: 0.4rem;
-        font-size: 0.7rem;
-        color: var(--text-soft);
-      }
-
-      .cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: 0.5rem;
-        margin-bottom: 0.6rem;
-      }
-      .card {
-        border-radius: 0.75rem;
-        border: 1px solid rgba(148, 163, 184, 0.45);
-        padding: 0.5rem 0.6rem;
-        font-size: 0.78rem;
-      }
-      .card-label {
-        color: var(--text-soft);
-        margin-bottom: 0.18rem;
-      }
-      .card-value {
-        font-size: 0.92rem;
-      }
-      .status-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25rem;
-        padding: 0.08rem 0.5rem;
-        border-radius: 999px;
-        font-size: 0.75rem;
-      }
-      .dot {
-        width: 0.4rem;
-        height: 0.4rem;
-        border-radius: 999px;
-        background: #22c55e;
-      }
-      .status-online {
-        background: rgba(22, 163, 74, 0.25);
-        color: #bbf7d0;
-      }
-      .log-list {
-        border-radius: 0.7rem;
-        border: 1px solid rgba(148, 163, 184, 0.45);
-        background: rgba(15, 23, 42, 0.98);
-        padding: 0.45rem 0.55rem;
-        font-size: 0.74rem;
-        max-height: 180px;
-        overflow-y: auto;
-      }
-      .log-row {
-        display: flex;
-        justify-content: space-between;
-        gap: 0.5rem;
-        padding: 0.16rem 0;
-        border-bottom: 1px dashed rgba(30, 64, 175, 0.7);
-      }
-      .log-row:last-child {
-        border-bottom: none;
-      }
-      .log-label {
-        color: var(--text-soft);
-      }
-      .log-value {
-        text-align: right;
-      }
-
-      footer {
-        padding: 0.8rem 1rem 0.9rem;
-        font-size: 0.72rem;
-        color: var(--text-soft);
-        text-align: center;
-      }
-
-      @media (max-width: 768px) {
-        main {
-          padding-inline: 0.55rem;
-        }
-        .shell {
-          padding: 0.75rem;
-        }
-        .layout {
-          grid-template-columns: 1fr;
-        }
-        header {
-          padding-inline: 0.6rem;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="page">
-      <header>
-        <div class="brand">
-          <span>Habib</span>
-          <span class="brand-pill">OpenClaw · Test env</span>
-        </div>
-        <nav>
-          <button class="active" data-tab="chat" onclick="setTab('chat')">
-            Chat
-          </button>
-          <button data-tab="monitoring" onclick="setTab('monitoring')">
-            Monitoring
-          </button>
-        </nav>
-      </header>
-      <main>
-        <section class="shell">
-          <div class="hero">
-            <div class="hero-title">Espace de test pour ton agent Habib</div>
-            <p class="hero-sub">
-              Landing page pour discuter avec l'agent OpenClaw et visualiser un
-              monitoring minimal. Base propre, prête à évoluer.
-            </p>
-            <div class="badges">
-              <span class="badge">Mobile-first</span>
-              <span class="badge">HTML statique</span>
-              <span class="badge">Prêt Netlify</span>
-            </div>
-          </div>
-          <div class="layout">
-            <div class="panel" id="panel-chat">
-              <h2>
-                <span>Chat</span>
-                <span>Mock front · backend à brancher</span>
-              </h2>
-              <div class="chat-box" id="chat-box">
-                <div class="chat-empty" id="chat-empty">
-                  Aucun message pour l'instant. Ici tu verras les échanges avec
-                  Habib.<br />
-                  En prod, cette zone appellera ton backend OpenClaw.
-                </div>
-              </div>
-              <form class="chat-input-row" onsubmit="sendMessage(event)">
-                <input
-                  id="chat-input"
-                  type="text"
-                  placeholder="Écris un message pour Habib..."
-                  autocomplete="off"
-                />
-                <button type="submit">Envoyer</button>
-              </form>
-              <div class="hint">
-                Pour l'instant, tout reste côté navigateur (mock). Ensuite tu
-                brancheras <code>/api/chat</code> sur ton serveur.
-              </div>
-            </div>
-            <div class="panel" id="panel-monitoring" style="display: none">
-              <h2>
-                <span>Monitoring</span>
-                <span>Preview d'un futur dashboard</span>
-              </h2>
-              <div class="cards">
-                <div class="card">
-                  <div class="card-label">Statut agent</div>
-                  <div class="card-value">
-                    <span class="status-pill status-online" id="status-pill">
-                      <span class="dot"></span>
-                      <span id="status-text">online (mock)</span>
-                    </span>
-                  </div>
-                </div>
-                <div class="card">
-                  <div class="card-label">Requêtes (mock)</div>
-                  <div class="card-value" id="req-count">12</div>
-                </div>
-                <div class="card">
-                  <div class="card-label">Dernière exécution</div>
-                  <div class="card-value" id="last-run">
-                    il y a quelques secondes
-                  </div>
-                </div>
-              </div>
-              <div class="log-list" id="log-list">
-                <div class="log-row">
-                  <div class="log-label">Bootstrap du test env</div>
-                  <div class="log-value">OK</div>
-                </div>
-                <div class="log-row">
-                  <div class="log-label">Connexion backend OpenClaw</div>
-                  <div class="log-value">à brancher</div>
-                </div>
-                <div class="log-row">
-                  <div class="log-label">Dernier message</div>
-                  <div class="log-value" id="log-last-msg">—</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
-      <footer>
-        Prototype de test Habib · Statique HTML · Déployable en 1 clic sur
-        Netlify.
-      </footer>
-    </div>
-    <script>
-      const messages = [];
-
-      function setTab(tab) {
-        const chatBtn = document.querySelector('nav button[data-tab="chat"]');
-        const monBtn = document.querySelector(
-          'nav button[data-tab="monitoring"]'
-        );
-        const chatPanel = document.getElementById('panel-chat');
-        const monPanel = document.getElementById('panel-monitoring');
-
-        if (tab === 'chat') {
-          chatBtn.classList.add('active');
-          monBtn.classList.remove('active');
-          chatPanel.style.display = '';
-          monPanel.style.display = 'none';
-        } else {
-          monBtn.classList.add('active');
-          chatBtn.classList.remove('active');
-          chatPanel.style.display = 'none';
-          monPanel.style.display = '';
-        }
-      }
-
-      function renderMessages() {
-        const box = document.getElementById('chat-box');
-        const empty = document.getElementById('chat-empty');
-        if (!box) return;
-
-        box.innerHTML = '';
-        if (messages.length === 0) {
-          if (empty) empty.style.display = 'block';
-          return;
-        }
-        if (empty) empty.style.display = 'none';
-
-        messages.forEach((m) => {
-          const wrapper = document.createElement('div');
-          wrapper.className = 'chat-msg';
-
-          const role = document.createElement('div');
-          role.className = 'chat-role';
-          role.textContent = m.role === 'user' ? 'Toi' : 'Habib (mock)';
-
-          const bubble = document.createElement('div');
-          bubble.className = 'bubble ' + (m.role === 'user' ? 'user' : 'agent');
-          bubble.textContent = m.content;
-
-          wrapper.appendChild(role);
-          wrapper.appendChild(bubble);
-          box.appendChild(wrapper);
-        });
-        box.scrollTop = box.scrollHeight;
-      }
-
-      function sendMessage(event) {
-        event.preventDefault();
-        const input = document.getElementById('chat-input');
-        if (!input || !input.value.trim()) return;
-        const text = input.value.trim();
-        input.value = '';
-
-        messages.push({ role: 'user', content: text });
-        messages.push({
-          role: 'agent',
-          content:
-            'Mock: en prod je répondrai via ton backend OpenClaw à "' +
-            text +
-            '".',
-        });
-
-        const lastMsg = document.getElementById('log-last-msg');
-        if (lastMsg) {
-          lastMsg.textContent =
-            text.slice(0, 40) + (text.length > 40 ? '…' : '');
-        }
-        const reqCount = document.getElementById('req-count');
-        if (reqCount) {
-          const current = parseInt(reqCount.textContent || '0', 10) || 0;
-          reqCount.textContent = current + 1;
-        }
-        renderMessages();
-      }
-
-      renderMessages();
-    </script>
-  </body>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Habib · OpenClaw Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+:root,[data-theme="dark"]{--bg:#0a0a0f;--surface:#111118;--surface-2:#16161f;--surface-3:#1c1c28;--border:rgba(255,255,255,0.07);--border-bright:rgba(255,255,255,0.13);--text:#e8e8f0;--text-muted:#7878a0;--text-faint:#3d3d55;--primary:#7c6af7;--primary-dim:rgba(124,106,247,0.15);--primary-glow:rgba(124,106,247,0.35);--accent-green:#22d3a0;--accent-green-dim:rgba(34,211,160,0.12);--accent-orange:#f97316;--accent-orange-dim:rgba(249,115,22,0.12);--accent-red:#f43f5e;--accent-red-dim:rgba(244,63,94,0.12);--font-body:'Inter',sans-serif;--font-mono:'JetBrains Mono',monospace;--text-xs:clamp(0.75rem,0.7rem + 0.25vw,0.8rem);--text-sm:clamp(0.8rem,0.75rem + 0.3vw,0.875rem);--text-base:clamp(0.9rem,0.85rem + 0.25vw,1rem);--text-lg:clamp(1rem,0.95rem + 0.3vw,1.15rem);--text-xl:clamp(1.15rem,1.1rem + 0.4vw,1.4rem);--r-sm:6px;--r-md:10px;--r-lg:14px;--r-xl:18px;--r-full:9999px;--s1:0.25rem;--s2:0.5rem;--s3:0.75rem;--s4:1rem;--s5:1.25rem;--s6:1.5rem;--s8:2rem;--s10:2.5rem;--sidebar-w:220px}*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}body{min-height:100dvh;font-family:var(--font-body);font-size:var(--text-base);color:var(--text);background:var(--bg);display:flex;overflow:hidden}.sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);height:100dvh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;position:relative;z-index:10}.sidebar-logo{display:flex;align-items:center;gap:var(--s3);padding:var(--s4) var(--s4) var(--s3);border-bottom:1px solid var(--border)}.logo-mark{width:30px;height:30px;background:var(--primary);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 12px var(--primary-glow)}.logo-mark svg{width:16px;height:16px;stroke:#fff;stroke-width:2.5;fill:none}.logo-text{font-size:var(--text-sm);font-weight:600;letter-spacing:-.01em}.logo-version{font-size:var(--text-xs);color:var(--text-muted);margin-top:1px}.sidebar-section{padding:var(--s3) var(--s3) 0;margin-bottom:var(--s2)}.sidebar-label{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);padding:0 var(--s2) var(--s2)}.nav-item{display:flex;align-items:center;gap:var(--s3);padding:var(--s2) var(--s3);border-radius:var(--r-md);cursor:pointer;font-size:var(--text-sm);color:var(--text-muted);transition:background .15s,color .15s;position:relative;user-select:none}.nav-item:hover{background:var(--surface-2);color:var(--text)}.nav-item.active{background:var(--primary-dim);color:var(--primary)}.nav-item.active .nav-icon{color:var(--primary)}.nav-icon{width:16px;height:16px;flex-shrink:0;opacity:.7}.nav-item.active .nav-icon{opacity:1}.nav-badge{margin-left:auto;font-size:10px;font-weight:600;background:var(--primary-dim);color:var(--primary);padding:1px 6px;border-radius:var(--r-full)}.agent-card{display:flex;align-items:center;gap:var(--s3);padding:var(--s2) var(--s3);border-radius:var(--r-md);cursor:pointer;transition:background .15s;margin-bottom:2px}.agent-card:hover{background:var(--surface-2)}.agent-card.selected{background:var(--surface-3);outline:1px solid var(--border-bright)}.agent-avatar{width:28px;height:28px;border-radius:var(--r-md);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}.agent-name{font-size:var(--text-sm);font-weight:500;line-height:1.2}.agent-model{font-size:10px;color:var(--text-muted)}.agent-status-dot{width:7px;height:7px;border-radius:50%;margin-left:auto;flex-shrink:0}.dot-green{background:var(--accent-green);box-shadow:0 0 5px var(--accent-green)}.dot-gray{background:var(--text-faint)}.sidebar-footer{margin-top:auto;padding:var(--s3);border-top:1px solid var(--border);display:flex;align-items:center;gap:var(--s3)}.user-avatar{width:28px;height:28px;border-radius:var(--r-full);background:linear-gradient(135deg,var(--primary),#a855f7);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}.user-name{font-size:var(--text-sm);font-weight:500}.user-role{font-size:10px;color:var(--text-muted)}.main{flex:1;display:flex;flex-direction:column;height:100dvh;overflow:hidden;min-width:0}.topbar{display:flex;align-items:center;gap:var(--s4);padding:0 var(--s5);height:52px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0}.topbar-title{font-size:var(--text-base);font-weight:600;margin-right:auto}.topbar-tab{display:flex;align-items:center;gap:var(--s2);font-size:var(--text-sm);color:var(--text-muted);padding:var(--s2) var(--s3);border-radius:var(--r-md);cursor:pointer;transition:background .15s,color .15s;user-select:none}.topbar-tab:hover{background:var(--surface-2);color:var(--text)}.topbar-tab.active{background:var(--primary-dim);color:var(--primary)}.topbar-sep{width:1px;height:20px;background:var(--border)}.icon-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-md);cursor:pointer;color:var(--text-muted);transition:background .15s,color .15s}.icon-btn:hover{background:var(--surface-2);color:var(--text)}.content{flex:1;overflow-y:auto;min-height:0}.chat-view{display:flex;flex-direction:column;height:100%;background:var(--bg)}.chat-header{padding:var(--s4) var(--s5) var(--s3);border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0}.chat-agent-row{display:flex;align-items:center;gap:var(--s3)}.chat-agent-avatar{width:34px;height:34px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}.chat-agent-name{font-size:var(--text-base);font-weight:600}.chat-agent-meta{font-size:var(--text-xs);color:var(--text-muted);margin-top:1px}.status-badge{display:inline-flex;align-items:center;gap:4px;font-size:var(--text-xs);font-weight:500;padding:2px 8px;border-radius:var(--r-full)}.badge-green{background:var(--accent-green-dim);color:var(--accent-green)}.badge-purple{background:var(--primary-dim);color:var(--primary)}.selector-row{display:flex;align-items:center;gap:var(--s2);margin-top:var(--s3);flex-wrap:wrap}.model-selector{display:flex;align-items:center;gap:var(--s2);background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);padding:4px var(--s3);cursor:pointer;font-size:var(--text-xs);color:var(--text-muted)}.model-selector:hover{border-color:var(--border-bright)}.messages{flex:1;overflow-y:auto;padding:var(--s5);display:flex;flex-direction:column;gap:var(--s4)}.msg{display:flex;gap:var(--s3);max-width:780px}.msg.user{align-self:flex-end;flex-direction:row-reverse}.msg-av{width:28px;height:28px;border-radius:var(--r-md);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}.msg-bubble{padding:var(--s3) var(--s4);border-radius:var(--r-lg);font-size:var(--text-sm);line-height:1.6;max-width:520px}.msg.agent .msg-bubble{background:var(--surface-2);border:1px solid var(--border)}.msg.user .msg-bubble{background:var(--primary-dim);border:1px solid rgba(124,106,247,.3)}.msg-meta{font-size:10px;color:var(--text-faint);margin-top:var(--s1)}.chat-input-area{padding:var(--s4) var(--s5);border-top:1px solid var(--border);background:var(--surface);flex-shrink:0}.chat-input-wrap{display:flex;align-items:flex-end;gap:var(--s3);background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-xl);padding:var(--s3) var(--s4);transition:border-color .15s}.chat-input-wrap:focus-within{border-color:var(--primary)}.chat-input{flex:1;background:transparent;border:none;outline:none;font-family:var(--font-body);font-size:var(--text-sm);color:var(--text);resize:none;max-height:120px;line-height:1.5}.chat-input::placeholder{color:var(--text-faint)}.send-btn{width:32px;height:32px;border-radius:var(--r-full);background:var(--primary);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;border:none;box-shadow:0 0 10px var(--primary-glow)}.send-btn svg{width:14px;height:14px;stroke:#fff;stroke-width:2.5;fill:none;transform:translateX(1px)}.input-hint{font-size:10px;color:var(--text-faint);margin-top:var(--s2);text-align:center}.monitoring-view{padding:var(--s5);display:none}.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s3);margin-bottom:var(--s5)}.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--s4);position:relative;overflow:hidden}.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}.kpi-card.green::before{background:linear-gradient(to right,var(--accent-green),transparent)}.kpi-card.purple::before{background:linear-gradient(to right,var(--primary),transparent)}.kpi-card.orange::before{background:linear-gradient(to right,var(--accent-orange),transparent)}.kpi-label{font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--s2);text-transform:uppercase;letter-spacing:.05em;font-weight:500}.kpi-value{font-size:var(--text-xl);font-weight:700;font-variant-numeric:tabular-nums lining-nums;line-height:1}.kpi-delta{display:inline-flex;align-items:center;gap:3px;margin-top:var(--s2);font-size:var(--text-xs);font-weight:500;padding:2px 6px;border-radius:var(--r-full)}.delta-up{background:var(--accent-green-dim);color:var(--accent-green)}.delta-neutral{background:rgba(120,120,160,.12);color:var(--text-muted)}.charts-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:var(--s4);margin-bottom:var(--s4)}.chart-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--s4)}.chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--s4)}.chart-title{font-size:var(--text-sm);font-weight:600}.chart-legend{display:flex;gap:var(--s4)}.legend-item{display:flex;align-items:center;gap:var(--s2);font-size:var(--text-xs);color:var(--text-muted)}.legend-dot{width:8px;height:8px;border-radius:50%}.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4)}.table-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--s4)}.table-row{display:flex;align-items:center;gap:var(--s3);padding:var(--s3) 0;border-bottom:1px solid var(--border);font-size:var(--text-xs)}.table-row:last-child{border-bottom:none}.tr-label{color:var(--text-muted);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tr-val{font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap}.tr-bar-wrap{flex:1.5;height:4px;background:var(--surface-3);border-radius:var(--r-full);overflow:hidden}.tr-bar{height:100%;border-radius:var(--r-full)}.gateway-list{display:flex;flex-direction:column;gap:var(--s2)}.gw-row{display:flex;align-items:center;gap:var(--s3);background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);padding:var(--s3) var(--s4)}.gw-icon{width:28px;height:28px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px}.gw-name{font-size:var(--text-sm);font-weight:500;flex:1}.gw-latency{font-size:var(--text-xs);color:var(--text-muted);margin-right:var(--s3);font-variant-numeric:tabular-nums}.gw-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:var(--r-full)}.gw-ok{background:var(--accent-green-dim);color:var(--accent-green)}.gw-warn{background:var(--accent-orange-dim);color:var(--accent-orange)}@media(max-width:900px){.sidebar{display:none}.kpi-grid{grid-template-columns:1fr 1fr}.charts-grid{grid-template-columns:1fr}.bottom-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+<div class="sidebar-logo"><div class="logo-mark"><svg viewBox="0 0 16 16"><polyline points="2,12 6,4 10,9 13,5"/></svg></div><div><div class="logo-text">OpenClaw</div><div class="logo-version">Studio v0.1</div></div></div>
+<div class="sidebar-section"><div class="sidebar-label">Navigation</div><div class="nav-item active" onclick="switchView('chat')"><i data-lucide="message-square" class="nav-icon"></i> Chat</div><div class="nav-item" onclick="switchView('monitoring')"><i data-lucide="activity" class="nav-icon"></i> Monitoring <span class="nav-badge">Live</span></div></div>
+<div style="padding:var(--s3)"><div class="sidebar-label">Agents</div>
+<div class="agent-card selected" onclick="selectAgent(this,'Habib','#7c6af7','H','Qwen2.5-72B')"><div class="agent-avatar" style="background:var(--primary-dim);color:var(--primary)">H</div><div><div class="agent-name">Habib</div><div class="agent-model">Qwen2.5-72B</div></div><div class="agent-status-dot dot-green"></div></div>
+<div class="agent-card" onclick="selectAgent(this,'Scout','#22d3a0','S','DeepSeek-R1')"><div class="agent-avatar" style="background:var(--accent-green-dim);color:var(--accent-green)">S</div><div><div class="agent-name">Scout</div><div class="agent-model">DeepSeek-R1</div></div><div class="agent-status-dot dot-green"></div></div>
+<div class="agent-card" onclick="selectAgent(this,'Relay','#f97316','R','GPT-4o')"><div class="agent-avatar" style="background:var(--accent-orange-dim);color:var(--accent-orange)">R</div><div><div class="agent-name">Relay</div><div class="agent-model">GPT-4o</div></div><div class="agent-status-dot dot-gray"></div></div>
+</div>
+<div class="sidebar-footer"><div class="user-avatar">N</div><div><div class="user-name">Ndm SUL</div><div class="user-role">Admin</div></div></div>
+</aside>
+<div class="main">
+<div class="topbar">
+<div class="topbar-title" id="topbar-title">Habib</div>
+<div class="topbar-tab active" id="tab-chat" onclick="switchView('chat')"><i data-lucide="message-square"></i> Chat</div>
+<div class="topbar-tab" id="tab-monitoring" onclick="switchView('monitoring')"><i data-lucide="activity"></i> Monitoring</div>
+<div class="topbar-sep"></div>
+<div class="icon-btn"><i data-lucide="bell"></i></div>
+</div>
+<div class="content">
+<div class="chat-view" id="chat-view">
+<div class="chat-header">
+<div class="chat-agent-row"><div class="chat-agent-avatar" id="chat-av" style="background:var(--primary-dim);color:var(--primary)">H</div><div><div class="chat-agent-name" id="chat-name">Habib</div><div class="chat-agent-meta" id="chat-meta">Qwen2.5-72B · OpenClaw · VPS Contabo</div></div><span class="status-badge badge-green" style="margin-left:auto"><span style="width:6px;height:6px;background:currentColor;border-radius:50%;display:inline-block"></span> Online</span></div>
+<div class="selector-row"><div class="model-selector"><i data-lucide="cpu" style="width:12px;height:12px"></i> <span id="sel-model">Qwen2.5-72B</span></div><div class="model-selector"><i data-lucide="zap" style="width:12px;height:12px"></i> Temp 0.7</div><span class="status-badge badge-purple" style="margin-left:auto">Mock · API à brancher</span></div>
+</div>
+<div class="messages" id="messages">
+<div class="msg agent"><div class="msg-av" id="av-agent" style="background:var(--primary-dim);color:var(--primary)">H</div><div><div class="msg-bubble">Bonjour ! Je suis Habib, ton agent OpenClaw. Pose-moi n'importe quelle question ou donne-moi une tâche.</div><div class="msg-meta">Habib · il y a 2 min · 0.003$ · 124 tokens</div></div></div>
+<div class="msg user"><div class="msg-av" style="background:linear-gradient(135deg,var(--primary),#a855f7);color:#fff">N</div><div><div class="msg-bubble">Quel est l'état de mes workflows n8n ?</div><div class="msg-meta" style="text-align:right">Toi · il y a 1 min</div></div></div>
+<div class="msg agent"><div class="msg-av" id="av-agent2" style="background:var(--primary-dim);color:var(--primary)">H</div><div><div class="msg-bubble">J'ai vérifié tes workflows n8n : 3 actifs, 1 en erreur (Gumroad Onboarding – webhook timeout). Je peux relancer si tu veux.</div><div class="msg-meta">Habib · il y a 1 min · 0.007$ · 312 tokens</div></div></div>
+</div>
+<div class="chat-input-area">
+<div class="chat-input-wrap"><textarea class="chat-input" id="chat-input" rows="1" placeholder="Message Habib... (mock, API à brancher)" onkeydown="handleKey(event)"></textarea><button class="send-btn" onclick="sendMsg()"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button></div>
+<div class="input-hint">Front mock · branche <code>/api/chat</code> pour activer l'agent réel</div>
+</div>
+</div>
+<div class="monitoring-view" id="monitoring-view">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--s5)"><div><div style="font-size:var(--text-lg);font-weight:700">Monitoring</div><div style="font-size:var(--text-xs);color:var(--text-muted)">Données mock</div></div></div>
+<div class="kpi-grid">
+<div class="kpi-card purple"><div class="kpi-label">Tokens consommés</div><div class="kpi-value">847K</div><div class="kpi-delta delta-up">↑ +14% vs hier</div></div>
+<div class="kpi-card orange"><div class="kpi-label">Coût estimé</div><div class="kpi-value">$2.43</div><div class="kpi-delta delta-up">↑ +0.31$</div></div>
+<div class="kpi-card green"><div class="kpi-label">Requêtes</div><div class="kpi-value">1 284</div><div class="kpi-delta delta-up">↑ +8%</div></div>
+<div class="kpi-card green"><div class="kpi-label">Uptime</div><div class="kpi-value">99.8%</div><div class="kpi-delta delta-neutral">→ Stable</div></div>
+</div>
+<div class="charts-grid">
+<div class="chart-panel"><div class="chart-header"><div class="chart-title">Tokens & Coût · 7j</div><div class="chart-legend"><div class="legend-item"><div class="legend-dot" style="background:var(--primary)"></div>Tokens</div><div class="legend-item"><div class="legend-dot" style="background:var(--accent-orange)"></div>Coût</div></div></div><canvas id="tokenChart" height="180"></canvas></div>
+<div class="chart-panel"><div class="chart-header"><div class="chart-title">Répartition</div></div><canvas id="donutChart" height="180"></canvas></div>
+</div>
+<div class="bottom-grid">
+<div class="table-panel"><div class="chart-title" style="margin-bottom:var(--s3)">Top modèles</div>
+<div class="table-row"><div class="tr-label">Qwen2.5-72B (Habib)</div><div class="tr-bar-wrap"><div class="tr-bar" style="width:82%;background:var(--primary)"></div></div><div class="tr-val">692K</div></div>
+<div class="table-row"><div class="tr-label">DeepSeek-R1 (Scout)</div><div class="tr-bar-wrap"><div class="tr-bar" style="width:48%;background:var(--accent-green)"></div></div><div class="tr-val">408K</div></div>
+<div class="table-row"><div class="tr-label">GPT-4o (Relay)</div><div class="tr-bar-wrap"><div class="tr-bar" style="width:22%;background:var(--accent-orange)"></div></div><div class="tr-val">187K</div></div>
+</div>
+<div class="table-panel"><div class="chart-title" style="margin-bottom:var(--s3)">Gateways</div>
+<div class="gateway-list">
+<div class="gw-row"><div class="gw-icon" style="background:var(--accent-green-dim)">🔗</div><div class="gw-name">OpenRouter</div><div class="gw-latency">142ms</div><div class="gw-badge gw-ok">OK</div></div>
+<div class="gw-row"><div class="gw-icon" style="background:var(--accent-green-dim)">⚙️</div><div class="gw-name">n8n Webhooks</div><div class="gw-latency">89ms</div><div class="gw-badge gw-ok">OK</div></div>
+<div class="gw-row"><div class="gw-icon" style="background:var(--accent-orange-dim)">📡</div><div class="gw-name">Telegram Bot</div><div class="gw-latency">310ms</div><div class="gw-badge gw-warn">Lent</div></div>
+<div class="gw-row"><div class="gw-icon" style="background:var(--accent-green-dim)">🖥️</div><div class="gw-name">VPS Contabo</div><div class="gw-latency">24ms</div><div class="gw-badge gw-ok">OK</div></div>
+<div class="gw-row"><div class="gw-icon" style="background:var(--accent-green-dim)">🦙</div><div class="gw-name">Ollama local</div><div class="gw-latency">—</div><div class="gw-badge gw-ok">Actif</div></div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+lucide.createIcons();
+function switchView(v){
+  const c=document.getElementById('chat-view');
+  const m=document.getElementById('monitoring-view');
+  const tc=document.getElementById('tab-chat');
+  const tm=document.getElementById('tab-monitoring');
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    if((v==='chat'&&n.textContent.includes('Chat'))||(v==='monitoring'&&n.textContent.includes('Monitoring')))n.classList.add('active');
+    else n.classList.remove('active');
+  });
+  if(v==='chat'){c.style.display='flex';m.style.display='none';tc.classList.add('active');tm.classList.remove('active');}
+  else{c.style.display='none';m.style.display='block';tc.classList.remove('active');tm.classList.add('active');initCharts();}
+}
+function selectAgent(el,name,color,initial,model){
+  document.querySelectorAll('.agent-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('topbar-title').textContent=name;
+  document.getElementById('chat-name').textContent=name;
+  document.getElementById('chat-meta').textContent=model+' · OpenClaw · VPS Contabo';
+  document.getElementById('sel-model').textContent=model;
+  ['chat-av','av-agent','av-agent2'].forEach(id=>{
+    const e=document.getElementById(id);
+    e.textContent=initial;e.style.color=color;e.style.background=color+'22';
+  });
+}
+function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
+function sendMsg(){
+  const inp=document.getElementById('chat-input');
+  const text=inp.value.trim();if(!text)return;
+  const box=document.getElementById('messages');
+  const av=document.getElementById('chat-av');
+  const name=document.getElementById('chat-name').textContent;
+  box.innerHTML+=`<div class="msg user"><div class="msg-av" style="background:linear-gradient(135deg,var(--primary),#a855f7);color:#fff">N</div><div><div class="msg-bubble">${esc(text)}</div><div class="msg-meta" style="text-align:right">Toi · maintenant</div></div></div>`;
+  inp.value='';
+  setTimeout(()=>{
+    const t=Math.floor(Math.random()*300+80);
+    box.innerHTML+=`<div class="msg agent"><div class="msg-av" style="background:${av.style.background};color:${av.style.color}">${av.textContent}</div><div><div class="msg-bubble">Mock — branche <code>/api/chat</code> pour la vraie réponse.<br><span style="color:var(--text-faint);font-size:.8em">Écho : ${esc(text)}</span></div><div class="msg-meta">${name} · maintenant · $${(t*0.000003).toFixed(5)} · ${t} tokens</div></div></div>`;
+    box.scrollTop=99999;
+  },600);
+  box.scrollTop=99999;
+}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+let ci=false;
+function initCharts(){
+  if(ci)return;ci=true;
+  const gc='rgba(255,255,255,0.05)',fc='#7878a0';
+  Chart.defaults.color=fc;Chart.defaults.font.family="'Inter',sans-serif";Chart.defaults.font.size=11;
+  new Chart(document.getElementById('tokenChart'),{type:'bar',data:{labels:['L','M','M','J','V','S','D'],datasets:[{data:[520,640,480,720,810,680,847],backgroundColor:'rgba(124,106,247,.6)',borderRadius:6,order:2,yAxisID:'y'},{data:[1.56,1.92,1.44,2.16,2.43,2.04,2.43],type:'line',borderColor:'#f97316',borderWidth:2,pointRadius:3,pointBackgroundColor:'#f97316',tension:.4,order:1,yAxisID:'y2'}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{color:gc},ticks:{color:fc}},y:{grid:{color:gc},ticks:{color:fc,callback:v=>v+'K'},position:'left'},y2:{grid:{display:false},ticks:{color:'#f97316',callback:v=>'$'+v.toFixed(1)},position:'right'}},plugins:{legend:{display:false}}}});
+  new Chart(document.getElementById('donutChart'),{type:'doughnut',data:{labels:['Habib','Scout','Relay','Autres'],datasets:[{data:[692,408,187,85],backgroundColor:['rgba(124,106,247,.85)','rgba(34,211,160,.85)','rgba(249,115,22,.85)','rgba(120,120,160,.5)'],borderWidth:0,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,cutout:'68%',plugins:{legend:{position:'bottom',labels:{padding:12,usePointStyle:true,pointStyle:'circle'}}}}});
+}
+</script>
+</body>
 </html>
